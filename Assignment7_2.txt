@@ -1,0 +1,224 @@
+--------------------------------------
+STUDENT DECLARATION
+--------------------------------------
+I have read the policy for plagiarism at University of Wollongong.
+I declare that this assignment is entirely my work.
+If found to be plagiarized, I will receive 0 marks.
+--------------------------------------
+STUDENT DETAILS
+--------------------------------------
+STUDENT ID NUMBER: 5886429
+STUDENT NAME: Tasfique
+STUDENT FAMILY NAME:  Enam
+UOW EMAIL:  te696@uowmail.edu.au
+
+
+**************************************
+Filename: Task1.html
+**************************************
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task 1</title>
+</head>
+
+<body>
+	<button onclick="getAjax()">Click here to View</button>
+	<br>
+	<div id="showResult"></div>
+	<div id="showResultTwo"></div>
+
+	<script type="text/javascript">
+		
+		function getAjax() {
+			var xmlhttprequest = new XMLHttpRequest();
+			xmlhttprequest.onreadystatechange = function() {
+				if (xmlhttprequest.readyState == 4 && xmlhttprequest.status == 200) {
+					processCreditCard(xmlhttprequest);
+				}
+			};
+
+			xmlhttprequest.open ("GET", "credit_card.xml", true);
+			xmlhttprequest.send();
+		}
+
+		function processCreditCard (xmlhttprequest) {
+			var responsexml = xmlhttprequest.responseXML;
+			var creditCardObj = parseXML(responsexml);
+			display(creditCardObj);
+
+		}
+
+		function parseXML(responsexml){
+			var creditCardObj = {}; //create a market object to hold the information in the xml file
+
+			var cardElement = responsexml.getElementsByTagName("dataset")[0];
+			creditCardObj.dateCreated = cardElement.getAttribute("dateCreated");
+			var indexElements = responsexml.getElementsByTagName("record");
+			creditCardObj.indexList = [];
+
+			for(var i=0; i< indexElements.length; i++)
+			{
+				var record = {}; //create an index object
+				record.profile_pic = indexElements[i].getElementsByTagName("profile_pic")[0].childNodes[0].nodeValue;
+				record.id = indexElements[i].getAttribute("id");
+				record.full_name = indexElements[i].getElementsByTagName("full_name")[0].childNodes[0].nodeValue;
+				record.type = indexElements[i].getElementsByTagName("credit_card")[0].getAttribute("type");
+				record.credit_card = Number(indexElements[i].getElementsByTagName("credit_card")[0].childNodes[0].nodeValue);
+				record.prev_balance = Number(indexElements[i].getElementsByTagName("prev_balance")[0].childNodes[0].nodeValue);
+				record.expenses = Number(indexElements[i].getElementsByTagName("expenses")[0].childNodes[0].nodeValue);
+				record.payments = Number(indexElements[i].getElementsByTagName("payments")[0].childNodes[0].nodeValue);
+				creditCardObj.indexList.push(record); //put the index object into the index array
+			}
+
+			return creditCardObj;
+			}
+
+			function display(creditCardObj){
+
+				var resultDisplay = "<h1>Credit Card Statement " + creditCardObj.dateCreated + "</h1>";
+				resultDisplay += "<table border='1'>";
+				resultDisplay += "<tr><th>ID</th><th>NAME</th><th>TYPE</th><th>CREDIT CARD</th><th>PREVIOUS BALANCE</th><th>EXPENSES</th><th>PAYMENTS</th><th>NEW BALANCE</th><th>STATUS</th></tr>";
+
+				var arrayExpenses = [];
+
+				for(var i=0; i<creditCardObj.indexList.length; i++)
+				{
+					resultDisplay += "<tr>";
+					resultDisplay += "<td>" + creditCardObj.indexList[i].id + "</td>";
+					resultDisplay += "<th>" + creditCardObj.indexList[i].full_name + "</th>";
+					resultDisplay += "<td>" + creditCardObj.indexList[i].type + "</td>";
+					resultDisplay += "<td>" + creditCardObj.indexList[i].credit_card + "</td>";
+					resultDisplay += "<td>" + "RM" + creditCardObj.indexList[i].prev_balance + "</td>";
+					resultDisplay += "<td>" + "RM" + creditCardObj.indexList[i].expenses + "</td>";
+					resultDisplay += "<td>" + "RM" + creditCardObj.indexList[i].payments + "</td>";
+					if(newBalance()<=1000){
+						resultDisplay += "<td style='color:green'>" + "RM" + newBalance() + "</td>";
+						resultDisplay += "<td style='color:green'>" +  condition() + "</td>";
+					}
+					else {
+						resultDisplay += "<td style='color:red'>" + "RM" + newBalance() + "</td>";
+						resultDisplay += "<td style='color:red'>" +  condition() + "</td>";
+					}
+					
+					
+					resultDisplay += "</tr>";
+
+					arrayExpenses.push(creditCardObj.indexList[i].expenses);
+				}
+
+				resultDisplay += "</table>";
+
+				var avgExpenses=0;
+				
+				for(var i=0; i<arrayExpenses.length; i++) 
+				{
+					avgExpenses = avgExpenses + arrayExpenses[i];
+				}
+
+				avgExpenses = avgExpenses/arrayExpenses.length;
+
+				function getMaxValue(){
+					var max = Math.max.apply(null, arrayExpenses);
+
+					return max;
+				}
+
+				function getMinValue(){
+					var min = Math.min.apply(null, arrayExpenses);
+
+					return min;
+				}
+
+				function newBalance() {
+					var newBalance = Math.round((creditCardObj.indexList[i].prev_balance + creditCardObj.indexList[i].expenses - creditCardObj.indexList[i].payments)*100)/100;
+					return newBalance;
+				}
+
+				function condition() {
+					var statusCheck;
+					if (newBalance()>1000){
+						return statusCheck = "+ Exceeds Credit Limit";
+					}
+					else if (newBalance()<=1000){
+						return statusCheck = "OK";
+					}
+				}
+
+
+
+				function check() {
+					//var newBalance=0;
+
+					for(var i=0; i<arrayNewBalance.length; i++) {
+
+						if (newBalance() > 1000) {
+							for(var i=0; i<creditCardObj.indexList.length; i++)
+							{
+								resultDisplay += "<td  style='color:red'>" + "RM" + Math.round((creditCardObj.indexList[i].prev_balance + creditCardObj.indexList[i].expenses - creditCardObj.indexList[i].payments)*100)/100 + "</td>";
+							}
+							
+
+
+						}
+						else {
+							for(var i=0; i<creditCardObj.indexList.length; i++)
+							{
+								resultDisplay += "<td  style='color:green'>" + "RM" + Math.round((creditCardObj.indexList[i].prev_balance + creditCardObj.indexList[i].expenses - creditCardObj.indexList[i].payments)*100)/100 + "</td>";
+							}
+						}
+					}
+				}
+
+
+
+				var resultDisplayTwo = "<h3>EXPENSES </h3>";
+				resultDisplayTwo += "<table border='1'>";
+				resultDisplayTwo += "<tr><th>AVERAGE EXPENSES</th><td>" +"RM"+Math.round(avgExpenses*100)/100 + "</td>";
+				resultDisplayTwo += "<tr><th>MINIMUM EXPENSES</th><td>" +"RM"+getMinValue() + "</td>";
+				resultDisplayTwo += "<tr><th>MAXIMUM EXPENSES</th><td>" +"RM"+getMaxValue() + "</td>";
+				
+
+				
+
+
+				resultDisplayTwo += "</table>";
+
+
+				var showResultDiv = document.getElementById("showResult");
+				showResultDiv.innerHTML = resultDisplay;
+
+				var showResultDivTwo = document.getElementById("showResultTwo");
+				showResultDivTwo.innerHTML = resultDisplayTwo;
+				}
+
+		/*function parseXML(responsexml){
+			 var recordElements = responsexml.getElementsByTagName("record");
+
+			 var creditCardObj = [];
+
+			 for(var i=0; i< recordElements.length; i++){
+			 var record = {};
+
+			 record.profile_pic = recordElements[i].getElementsByTagName("profile_pic")[0].childNodes[0].nodeValue;
+			 record.full_name = recordElements[i].getElementsByTagName("full_name")[0].childNodes[0].nodeValue;
+			 record.credit_card = Number(recordElements[i].getElementsByTagName("credit_card")[0].childNodes[0].nodeValue);
+			 record.prev_balance = Number(recordElements[i].getElementsByTagName("prev_balance")[0].childNodes[0].nodeValue);
+			 record.expenses = Number(recordElements[i].getElementsByTagName("expenses")[0].childNodes[0].nodeValue);
+			 record.payments = Number(recordElements[i].getElementsByTagName("payments")[0].childNodes[0].nodeValue);
+			 
+
+			 creditCardObj.push(record);
+			 }
+			 return creditCardObj;
+			}*/
+
+
+
+	</script>
+
+
+</body>
+</html>
+

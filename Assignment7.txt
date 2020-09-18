@@ -1,0 +1,126 @@
+--------------------------------------
+STUDENT DECLARATION
+--------------------------------------
+I have read the policy for plagiarism at University of Wollongong.
+I declare that this assignment is entirely my work.
+If found to be plagiarized, I will receive 0 marks.
+--------------------------------------
+STUDENT DETAILS
+--------------------------------------
+STUDENT ID NUMBER: <5886429/J16020825>
+STUDENT NAME: Tasfique
+STUDENT FAMILY NAME:  Enam
+UOW EMAIL:  te696@uowmail.edu.au
+
+--------------------------------------
+Filename: Task1.html
+--------------------------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Task 1</title>
+</head>
+<body>
+	<button onclick="getAjax()">Click here to View</button>
+	<br>
+	<div id="showResult"></div>
+
+	<script type="text/javascript">
+		
+		function getAjax() {
+			var xmlhttprequest = new XMLHttpRequest();
+			xmlhttprequest.onreadystatechange = function() {
+				if (xmlhttprequest.readyState == 4 && xmlhttprequest.status == 200) {
+					processCreditCard(xmlhttprequest);
+				}
+			};
+
+			xmlhttprequest.open ("GET", "credit_card.xml", true);
+			xmlhttprequest.send();
+		}
+
+		function processCreditCard (xmlhttprequest) {
+			var responsexml = xmlhttprequest.responseXML;
+			var creditCardObj = parseXML(responsexml);
+			display(creditCardObj);
+
+		}
+
+		function parseXML(responsexml){
+			 var creditCardObj = {}; //create a market object to hold the information in the xml file
+
+			 var cardElement = responsexml.getElementsByTagName("dataset")[0];
+			 creditCardObj.dateCreated = cardElement.getAttribute("dateCreated");
+			 var indexElements = responsexml.getElementsByTagName("record");
+			 creditCardObj.indexList = [];
+
+			 for(var i=0; i< indexElements.length; i++)
+			 {
+			 var record = {}; //create an index object
+			 record.profile_pic = indexElements[i].getElementsByTagName("profile_pic")[0].childNodes[0].nodeValue;
+			 record.id = indexElements[i].getAttribute("id");
+			 record.full_name = indexElements[i].getElementsByTagName("full_name")[0].childNodes[0].nodeValue;
+			 record.type = indexElements[i].getElementsByTagName("credit_card")[0].getAttribute("type");
+			 record.credit_card = Number(indexElements[i].getElementsByTagName("credit_card")[0].childNodes[0].nodeValue);
+			 record.prev_balance = Number(indexElements[i].getElementsByTagName("prev_balance")[0].childNodes[0].nodeValue);
+			 record.expenses = Number(indexElements[i].getElementsByTagName("expenses")[0].childNodes[0].nodeValue);
+			 record.payments = Number(indexElements[i].getElementsByTagName("payments")[0].childNodes[0].nodeValue);
+			 creditCardObj.indexList.push(record); //put the index object into the index array
+			 }
+
+			 return creditCardObj;
+			}
+
+			function display(creditCardObj){
+
+				 var resultDisplay = "<h1>Credit Card Statement " + creditCardObj.dateCreated + "</h1>";
+				 resultDisplay += "<table border='1'>";
+				 resultDisplay += "<tr><th>ID</th><th>NAME</th><th>TYPE</th><th>CREDIT CARD</th><th>PREVIOUS BALANCE</th><th>EXPENSES</th><th>PAYMENTS</th></tr>";
+
+				 for(var i=0; i<creditCardObj.indexList.length; i++)
+				 {
+					 resultDisplay += "<tr>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].id + "</td>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].full_name + "</td>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].type + "</td>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].credit_card + "</td>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].prev_balance + "</td>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].expenses + "</td>";
+					 resultDisplay += "<td>" + creditCardObj.indexList[i].payments + "</td>";
+					 resultDisplay += "</tr>";
+				 }
+				 resultDisplay += "</table>";
+
+				 var showResultDiv = document.getElementById("showResult");
+				 showResultDiv.innerHTML = resultDisplay;
+				}
+
+		/*function parseXML(responsexml){
+			 var recordElements = responsexml.getElementsByTagName("record");
+
+			 var creditCardObj = [];
+
+			 for(var i=0; i< recordElements.length; i++){
+			 var record = {};
+
+			 record.profile_pic = recordElements[i].getElementsByTagName("profile_pic")[0].childNodes[0].nodeValue;
+			 record.full_name = recordElements[i].getElementsByTagName("full_name")[0].childNodes[0].nodeValue;
+			 record.credit_card = Number(recordElements[i].getElementsByTagName("credit_card")[0].childNodes[0].nodeValue);
+			 record.prev_balance = Number(recordElements[i].getElementsByTagName("prev_balance")[0].childNodes[0].nodeValue);
+			 record.expenses = Number(recordElements[i].getElementsByTagName("expenses")[0].childNodes[0].nodeValue);
+			 record.payments = Number(recordElements[i].getElementsByTagName("payments")[0].childNodes[0].nodeValue);
+			 
+
+			 creditCardObj.push(record);
+			 }
+			 return creditCardObj;
+			}*/
+
+
+
+	</script>
+
+
+</body>
+</html>
